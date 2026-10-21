@@ -2,7 +2,17 @@
 
 [English](README.md) | [한국어](README.ko.md)
 
-A small tool for inspecting and explicitly distrusting 23 eMudhra/emSign certificates on macOS and Windows. It uses built-in operating system tools and requires no additional runtime or network access during execution.
+A supplementary tool for inspecting and explicitly distrusting 23 eMudhra/emSign certificates on macOS and Windows. It is intended for environments where updates are difficult to apply or an explicit local block is required. It uses built-in operating system tools and requires no additional runtime or network access during execution.
+
+## Update first
+
+**Prefer vendor updates that address this incident before applying manual blocks.** Update the operating system, browser, CA bundle, or runtime that the application actually uses for TLS certificate verification. Confirm that the installed version includes the fix, and restart or redeploy the application if needed to load the updated trust data.
+
+If those updates already reject the compromised certificates, additional manual distrust is not required for protection against this incident. Updating one CA bundle only protects applications that use that bundle; it does not update every trust store on the device.
+
+Use this tool as a fallback when updates cannot be applied promptly, or when your environment requires explicit local distrust. It checks the manual block configuration, not whether vendor mitigations are installed. A `NOT_CONFIGURED` result therefore does not mean the application is vulnerable.
+
+## Local blocking
 
 The default action only inspects the local configuration. Servers can resend intermediate certificates, and root store updates can restore deleted certificates. To keep them blocked, the tool uses macOS `deny` settings or the Windows `Disallowed` store.
 
