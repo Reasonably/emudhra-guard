@@ -29,7 +29,9 @@ printf 'SHA-256 hash: %s\n' "$first_sha" > "$MOCK_INVENTORY"
 security_cmd() {
     local command="$1"; shift
     case "$command" in
-        trust-settings-export) /bin/cp "$MOCK_STORE" "${@: -1}" ;;
+        trust-settings-export)
+            if [[ "${MOCK_EXPORT_ERROR:-}" != '' ]]; then printf '%s\n' "$MOCK_EXPORT_ERROR" >&2; return 1; fi
+            /bin/cp "$MOCK_STORE" "${@: -1}" ;;
         find-certificate) /bin/cat "$MOCK_INVENTORY" ;;
         add-trusted-cert) /usr/bin/security "$command" "$@" ;;
         add-certificates)
@@ -91,4 +93,10 @@ MOCK_IMPORT_FAIL=0
 /bin/cp "$DATA" "$WORK/corrupt.tsv"
 printf 'corrupt\n' >> "$WORK/corrupt.tsv"
 if (DATA="$WORK/corrupt.tsv"; load_certificates > /dev/null 2>&1); then fail 'Corrupt payload accepted.'; fi
-printf 'PASS: read-only check, block, idempotency, selective restore, conflict, partial failure, payload validation.\n'
+MOCK_EXPORT_ERROR='SecTrustSettingsCreateExternalRepresentation: No Trust Settings were found.'
+export_settings "$WORK/empty-export.plist"
+[[ "$(/usr/bin/plutil -extract trustList raw "$WORK/empty-export.plist")" == '' ]]
+MOCK_EXPORT_ERROR='SecTrustSettingsCreateExternalRepresentation: Authorization denied.'
+if (export_settings "$WORK/denied-export.plist" > /dev/null 2>&1); then fail 'Permission failure was treated as empty settings.'; fi
+unset MOCK_EXPORT_ERROR
+printf 'PASS: read-only check, block, idempotency, selective restore, conflict, partial failure, empty-store/error handling, payload validation.\n'

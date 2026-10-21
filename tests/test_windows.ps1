@@ -14,10 +14,11 @@ $originalOpen = ${function:Open-CertStore}
 $script:testStore = 'EmudhraGuardTest-' + [Guid]::NewGuid().ToString('N')
 $script:testDirectory = Join-Path $env:LOCALAPPDATA $script:testStore
 $script:realLocalAppData = $env:LOCALAPPDATA
-$script:importFail = $false
 $env:LOCALAPPDATA = $script:testDirectory
 $certificates = @(Read-Certificates)
-$unrelated = [Security.Cryptography.X509Certificates.X509Certificate2]::new([IO.File]::ReadAllBytes("$PSScriptRoot/unrelated.pem"))
+$unrelatedPem = [IO.File]::ReadAllText("$PSScriptRoot/unrelated.pem")
+$unrelatedDer = [Convert]::FromBase64String(($unrelatedPem -replace '-----[^\r\n]+-----', '' -replace '\s', ''))
+$unrelated = [Security.Cryptography.X509Certificates.X509Certificate2]::new($unrelatedDer)
 
 function Open-CertStore([string]$Name, [string]$Location, [bool]$Writable) {
     $null = $Name; $null = $Location

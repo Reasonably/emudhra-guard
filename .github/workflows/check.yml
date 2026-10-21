@@ -1,0 +1,37 @@
+name: Certificate guard checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  payload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: python3 tests/test_data.py
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: bash -n macos.sh && bash tests/test_macos.sh
+      - name: Read-only inspection of the runner
+        shell: bash
+        run: |
+          result=0
+          bash macos.sh check || result=$?
+          test "$result" -eq 0 -o "$result" -eq 2
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Test with Windows PowerShell 5.1
+        shell: powershell
+        run: .\tests\test_windows.ps1
+      - name: Test with PowerShell 7
+        shell: pwsh
+        run: .\tests\test_windows.ps1
+      - name: Read-only inspection of the runner
+        shell: powershell
+        run: |
+          powershell.exe -NoProfile -File .\windows.ps1 -Action Check
+          if ($LASTEXITCODE -notin @(0, 2)) { exit $LASTEXITCODE }
+          exit 0
