@@ -1,108 +1,110 @@
 # emudhra-guard
 
-macOS와 Windows에서 eMudhra/emSign 인증서 23개의 로컬 차단 상태를 확인하고, 명시적으로 신뢰를 거부하는 작은 도구입니다. 추가 런타임이나 인터넷 연결 없이 운영체제에 포함된 기능만 사용합니다.
+[English](README.md) | [한국어](README.ko.md)
 
-기본 실행은 조회만 합니다. 인증서를 단순히 삭제하면 서버의 중간 인증서 재전송이나 루트 저장소 업데이트로 신뢰가 다시 생길 수 있으므로, 차단할 때는 macOS의 `deny` 또는 Windows의 `Disallowed` 저장소를 사용합니다.
+A small tool for inspecting and explicitly distrusting 23 eMudhra/emSign certificates on macOS and Windows. It uses built-in operating system tools and requires no additional runtime or network access during execution.
 
-## 대상과 지원 범위
+The default action only inspects the local configuration. Servers can resend intermediate certificates, and root store updates can restore deleted certificates. To keep them blocked, the tool uses macOS `deny` settings or the Windows `Disallowed` store.
 
-2026-10-21에 확인한 고정 목록입니다.
+## Certificates and supported environments
 
-- emSign 루트 7개: `Root CA G1/C1`, `ECC Root CA G3/C3`, `Root TLS CA G1/G3`, `Root CS CA G3`입니다.
-- 사고에 관련된 중간 인증서 8개와 같은 키를 사용하는 교차서명본 8개입니다.
-- 확인 기준은 이름 검색이 아닌 인증서 DER의 SHA-256 지문입니다. 데이터 파일 자체의 SHA-256도 두 스크립트에 고정되어 있습니다.
+The tool uses a fixed list verified on **2026-10-21**:
 
-루트 7개를 차단하는 것은 이 도구의 차단 범위입니다. 그 루트의 개인 키가 모두 유출됐다는 뜻은 아닙니다. 이 목록은 새로운 인증서를 자동 탐지하거나 최신 폐기 목록을 대신하지 않습니다.
+- Seven emSign roots: `Root CA G1/C1`, `ECC Root CA G3/C3`, `Root TLS CA G1/G3`, and `Root CS CA G3`.
+- Eight intermediates associated with the incident, plus eight cross-signed certificates using the same keys.
+- Certificates are matched by the SHA-256 fingerprint of their DER encoding. Both scripts also pin the SHA-256 checksum of the certificate data file.
 
-| 운영체제 | 방식 | 적용 대상 |
+The seven roots are part of this tool's blocking scope; this does not mean that all seven root private keys were compromised. The fixed list does not automatically discover new certificates or replace up-to-date revocation information.
+
+| Operating system | Mechanism | Applies to |
 | --- | --- | --- |
-| macOS | 기본 키체인과 사용자 신뢰 설정, 또는 System 키체인과 관리자 신뢰 설정에 `deny`를 기록합니다. | OS 신뢰 설정을 사용하는 앱, Safari, 로컬 인증서를 사용하는 Chrome·Edge·Chromium 계열입니다. |
-| Windows | `CurrentUser` 또는 `LocalMachine`의 `Disallowed` 저장소에 추가합니다. | Windows 신뢰 저장소를 사용하는 앱과 Chrome·Edge입니다. |
+| macOS | Records `deny` in the default keychain and user trust settings, or in the System keychain and administrator trust settings. | Apps that use OS trust settings, Safari, and Chrome, Edge, and Chromium-based browsers that use local certificates. |
+| Windows | Adds certificates to the `CurrentUser` or `LocalMachine` `Disallowed` store. | Apps that use the Windows trust store, Chrome, and Edge. |
 
-Firefox/NSS, Java, Python의 별도 CA 번들, 컨테이너 내부 저장소는 수정하지 않습니다. 브라우저 정책에서 OS의 로컬 인증서를 사용하지 않도록 설정했다면 해당 브라우저에도 별도 조치가 필요합니다. 차단 후에는 브라우저를 다시 시작하세요. 시스템 범위 설정도 다른 사용자나 관리 정책의 명시적 설정까지 검사하는 기능은 아닙니다.
+The tool does not modify Firefox/NSS, Java trust stores, separate Python CA bundles, or certificate stores inside containers. Browsers configured to ignore local OS certificates require separate configuration. Restart browsers after blocking certificates. System scope does not audit explicit overrides made by other users or management policies.
 
 ## macOS
 
-macOS에 기본으로 포함된 Bash, `security`, `openssl`, `plutil`을 사용합니다.
+Uses Bash, `security`, `openssl`, and `plutil`, as provided by macOS.
 
 ```bash
 git clone https://github.com/Reasonably/emudhra-guard.git "$HOME/workspace/emudhra-guard"
 
-# 현재 계정의 차단 상태를 조회합니다. 인수가 없을 때도 조회만 합니다.
+# Inspect the current account. Running without arguments also only inspects.
 bash "$HOME/workspace/emudhra-guard/macos.sh" check
 
-# 현재 계정에서 차단합니다. macOS가 인증을 요청할 수 있습니다.
+# Block for the current account. macOS may request authentication.
 bash "$HOME/workspace/emudhra-guard/macos.sh" block
 
-# 시스템 범위의 차단 상태를 조회합니다.
+# Inspect system scope.
 bash "$HOME/workspace/emudhra-guard/macos.sh" check --system
 
-# 시스템 범위에 적용하려면 관리자 권한이 필요합니다.
+# Apply system-wide settings with administrator privileges.
 sudo bash "$HOME/workspace/emudhra-guard/macos.sh" block --system
 ```
 
-백업은 사용자 범위에서 `~/Library/Application Support/emudhra-guard/backups/`, 시스템 범위에서 `/var/root/Library/Application Support/emudhra-guard/backups/`에 저장됩니다. 실행 결과에 정확한 경로가 표시됩니다.
+Backups are saved under `~/Library/Application Support/emudhra-guard/backups/` for user scope, or `/var/root/Library/Application Support/emudhra-guard/backups/` for system scope. The command prints the exact backup path.
 
 ```bash
-# BACKUP_DIRECTORY를 실행 결과에 표시된 실제 절대 경로로 바꿉니다.
+# Replace BACKUP_DIRECTORY with the actual absolute path printed by the command.
 bash "$HOME/workspace/emudhra-guard/macos.sh" restore /absolute/path/to/BACKUP_DIRECTORY
 
-# 시스템 범위 백업 복원입니다.
+# Restore a system-scope backup.
 sudo bash "$HOME/workspace/emudhra-guard/macos.sh" restore /var/root/Library/Application\ Support/emudhra-guard/backups/BACKUP_DIRECTORY
 ```
 
-복원은 해당 실행에서 바꾼 신뢰 항목만 되돌립니다. 다른 인증서에 나중에 추가한 설정은 유지하며, 차단 대상의 설정을 별도로 바꿨다면 덮어쓰지 않고 중단합니다. 키체인에 추가한 공개 인증서 사본은 남기고 신뢰 설정만 복원합니다.
+Restore reverts only the trust entries changed by that run. It preserves later changes to unrelated certificates and stops if a target certificate's trust settings have been edited separately. Public certificate copies added to the keychain remain; only their trust settings are restored.
 
 ## Windows
 
-Windows PowerShell 5.1 이상을 사용합니다. 저장소를 복제하거나 배포 ZIP을 풀 때 `windows.ps1` 옆의 `data` 폴더도 함께 두세요.
+Requires Windows PowerShell 5.1 or later. Keep the `data` directory next to `windows.ps1` when cloning the repository or extracting the release ZIP.
 
 ```powershell
 git clone https://github.com/Reasonably/emudhra-guard.git "$HOME\emudhra-guard"
 
-# 현재 계정의 차단 상태를 조회합니다.
+# Inspect the current account.
 & "$HOME\emudhra-guard\windows.ps1" -Action Check
 
-# 현재 계정에서 차단합니다.
+# Block for the current account.
 & "$HOME\emudhra-guard\windows.ps1" -Action Block
 
-# 시스템 범위를 조회합니다.
+# Inspect machine scope.
 & "$HOME\emudhra-guard\windows.ps1" -Action Check -Scope LocalMachine
 
-# 아래 명령은 관리자 권한 PowerShell에서 실행합니다.
+# Run this command in an administrator PowerShell session.
 & "$HOME\emudhra-guard\windows.ps1" -Action Block -Scope LocalMachine
 
-# 실행 결과에 표시된 실제 백업 파일 경로를 사용합니다.
+# Use the actual backup file path printed by the command.
 & "$HOME\emudhra-guard\windows.ps1" -Action Restore -BackupPath 'C:\absolute\path\to\backup.json'
 ```
 
-실행 정책이 스크립트를 막으면 조직의 승인 절차에 따라 실행하세요. 이 도구는 실행 정책을 변경하지 않습니다.
+If execution policy blocks the script, follow your organization's approval process. The tool does not change execution policy.
 
-백업은 사용자 범위에서 `%LOCALAPPDATA%\emudhra-guard\backups`, 시스템 범위에서 `%ProgramData%\emudhra-guard\backups`에 저장됩니다. 복원할 때는 백업에 기록된 범위를 사용하고, 이 실행에서 새로 추가한 차단 항목만 제거합니다. 원래 있던 차단 항목은 유지합니다.
+Backups are saved under `%LOCALAPPDATA%\emudhra-guard\backups` for user scope, or `%ProgramData%\emudhra-guard\backups` for machine scope. Restore uses the scope recorded in the backup and removes only the block entries added by that run. Pre-existing block entries are preserved.
 
-## 결과 해석과 복구
+## Results and recovery
 
-- `DENY`: 선택한 범위에 명시적 차단이 있습니다. macOS에서는 브라우저가 읽을 공개 인증서 사본도 확인합니다.
-- `DENY_WITHOUT_LOCAL_COPY`: macOS 신뢰 거부는 있으나 선택한 키체인에 인증서 사본이 없습니다. `block`으로 보완할 수 있습니다.
-- `NOT_CONFIGURED`: 이 도구가 확인하는 범위에 명시적 차단이 없습니다. 브라우저 자체의 폐기 목록 등으로 이미 보호되고 있을 수 있으므로, 취약하다는 판정은 아닙니다.
-- 종료 코드 `0`은 조회 시 23개 모두 차단됐거나 요청이 완료됐다는 뜻입니다. `2`는 조회 결과에 미설정 항목이 있다는 뜻이고, `1`은 오류입니다.
+- `DENY`: An explicit block exists in the selected scope. On macOS, the tool also checks for the local public certificate copy that browsers read.
+- `DENY_WITHOUT_LOCAL_COPY`: macOS has a deny setting, but the selected keychain has no certificate copy. Run `block` to add it.
+- `NOT_CONFIGURED`: No explicit block was found in the scope being inspected. The browser's own revocation list or other protections may already block the certificate; this status is not a vulnerability verdict.
+- Exit code `0` means that all 23 certificates were explicitly blocked when inspected, or that the requested action completed. Exit code `2` means that inspection found entries without the required configuration. Exit code `1` indicates an error.
 
-변경 전에 백업을 먼저 저장합니다. 인증이 취소되거나 도중에 실패하면 성공으로 표시하지 않으며, 출력된 백업을 사용해 복원할 수 있습니다. 동시에 다른 도구로 같은 인증서의 신뢰 설정을 바꾸지 마세요. macOS는 가져오기 직전에 전체 신뢰 설정의 변경도 검사하지만, 검사와 OS 변경 사이의 원자적 잠금까지 제공하지는 않습니다.
+A backup is saved before changes are applied. Cancelled authentication or a failed operation is reported as a failure; use the printed backup path to restore settings. Avoid changing the same certificates with another tool at the same time. On macOS, the tool also checks for changes to the full trust settings immediately before importing, but the check and OS update are not protected by an atomic lock.
 
-복원하면 해당 인증서가 다시 기본 신뢰 상태로 돌아갈 수 있습니다. 정상 웹사이트나 코드 서명도 차단 범위에 포함되므로, 필요한 경우에만 복원하세요. 로컬 백업에는 호스트나 키체인 관련 정보가 있을 수 있으며 공개 저장소에 올리지 마세요.
+Restoring settings can return certificates to their default trust state. Blocking also affects legitimate websites and code signatures within the selected scope, so restore only when needed. Local backups may contain host or keychain information; do not publish them.
 
-## 근거와 검증
+## Sources and verification
 
-- [Mozilla의 사고 기록](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449)
-- [emSign 공식 인증서 저장소](https://repository.emsign.com/)
-- [교차서명 인증서 공개 자료](https://github.com/Fluepke/emudrahahahahaha)
-- [Chromium의 OS 신뢰 설정 처리](https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/faq.md)
-- [Microsoft X509Store 문서](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509store)
+- [Mozilla incident report](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449)
+- [Official emSign certificate repository](https://repository.emsign.com/)
+- [Published cross-signed certificates](https://github.com/Fluepke/emudrahahahahaha)
+- [Chromium's handling of OS trust settings](https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/faq.md)
+- [Microsoft X509Store documentation](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509store)
 
-개별 지문과 출처는 [data/provenance.json](data/provenance.json)에 있습니다. 개인 키는 포함하지 않습니다.
+Individual fingerprints and sources are listed in [data/provenance.json](data/provenance.json). No private keys are included.
 
-검증은 데이터 지문 일치, 조회의 무변경성, 반복 실행, 기존 설정 보존, 선택적 복원, 변조된 입력 거부를 다룹니다. macOS 테스트는 OS의 오프라인 plist 생성 기능과 모의 저장소를 사용하고, Windows 테스트는 임시 사용자 인증서 저장소를 사용합니다. 실제 신뢰 저장소를 변경하는 테스트는 자동 실행하지 않습니다.
+Checks cover certificate fingerprints, read-only inspection, repeated execution, preservation of existing settings, selective restore, and rejection of tampered input. macOS tests use the OS's offline plist generation tools and a simulated store. Windows tests use a temporary user certificate store. Automated tests do not modify the real trust stores.
 
-## 라이선스
+## License
 
-코드는 [MIT](LICENSE) 라이선스입니다. 인증서 데이터의 원본과 지문은 출처 목록에 기록했습니다. 배포 ZIP에도 코드와 공개 인증서 데이터만 포함합니다.
+The code is licensed under [MIT](LICENSE). Sources and fingerprints for the certificate data are recorded in the provenance list. Release ZIPs contain only code and public certificate data.
