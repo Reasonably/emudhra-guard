@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/
+backups/
+dist/
+*.key
+*.p12
+*.pfx

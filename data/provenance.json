@@ -1,0 +1,167 @@
+{
+  "snapshot_date": "2026-10-21",
+  "incident": "https://bugzilla.mozilla.org/show_bug.cgi?id=2083449",
+  "certificates": [
+    {
+      "name": "emSign Root CA - G1",
+      "sha256": "40F6AF0346A99AA1CD1D555A4E9CCE62C7F9634603EE406615833DC8C8D00367",
+      "sha1": "8AC7AD8F73AC4EC1B5754DA540F4FCCF7CB58E8C",
+      "source": "https://repository.emsign.com/certs/emSignRootCAG1.crt",
+      "type": "root"
+    },
+    {
+      "name": "emSign ECC Root CA - G3",
+      "sha256": "86A1ECBA089C4A8D3BBE2734C612BA341D813E043CF9E8A862CD5C57A36BBE6B",
+      "sha1": "3043FA4FF257DCA0C380EE2E58EA78B23FE6BBC1",
+      "source": "https://repository.emsign.com/certs/emSignECCRootCAG3.crt",
+      "type": "root"
+    },
+    {
+      "name": "emSign Root CA - C1",
+      "sha256": "125609AA301DA0A249B97A8239CB6A34216F44DCAC9F3954B14292F2E8C8608F",
+      "sha1": "E72EF1DFFCB20928CF5DD4D56737B151CB864F01",
+      "source": "https://repository.emsign.com/certs/emSignRootCAC1.crt",
+      "type": "root"
+    },
+    {
+      "name": "emSign ECC Root CA - C3",
+      "sha256": "BC4D809B15189D78DB3E1D8CF4F9726A795DA1643CA5F1358E1DDB0EDC0D7EB3",
+      "sha1": "B6AF43C29B81537DF6EF6BC31F1F60150CEE4866",
+      "source": "https://repository.emsign.com/certs/emSignECCRootCAC3.crt",
+      "type": "root"
+    },
+    {
+      "name": "emSign Root TLS CA - G1",
+      "sha256": "CEF71E70B7C29ADDF6C30CD19E614B38FD5F02A435A0EEDDD0087E183D101A51",
+      "sha1": "A670CBDE482554129CAD3E1C4B1372F669F75CAD",
+      "source": "https://repository.emsign.com/certs/roottlscag1.crt",
+      "type": "root"
+    },
+    {
+      "name": "emSign Root TLS CA - G3",
+      "sha256": "7DD78D5F4F13459A83DFF9ABBBA62EDBAF6F2D102BF257FD712F4D9F2746ED8D",
+      "sha1": "39D3236E4A609AB6190CBFA1AD02B3CC61DFC2C3",
+      "source": "https://repository.emsign.com/certs/roottlscag3.crt",
+      "type": "root"
+    },
+    {
+      "name": "emSign Root CS CA - G3",
+      "sha256": "F2EDAAFF3D9B701FB4D14C9F285F8C0BAD90FC3BCC1FA07D47F4718EDABA34A5",
+      "sha1": "1F74B6010A219FD9CA058D07AA053D15EFD9300D",
+      "source": "https://repository.emsign.com/certs/rootcscag3.crt",
+      "type": "root"
+    },
+    {
+      "name": "EM DV TLS CA - G3B",
+      "sha256": "42C4ACCD12C4F59597925E1A08A7A90102608543809308D50EC427E118BA1493",
+      "sha1": "A99B289464F3B44343270A7A1E910F02370483FE",
+      "source": "https://repository.emsign.com/certs/EMDVTLSCAG3B.crt",
+      "type": "intermediate"
+    },
+    {
+      "name": "EM DV TLS CA - G3C",
+      "sha256": "0164D7CEAE5BB909C272AF151FF44B1177AE9B47D9424B94F1D9558C30934D19",
+      "sha1": "8AD23BC78845D6FAAE1D534BAC89F0E36BA55A11",
+      "source": "https://repository.emsign.com/certs/EMDVTLSCAG3C.crt",
+      "type": "intermediate"
+    },
+    {
+      "name": "EM EV TLS CA - G3B",
+      "sha256": "E7568FE6E12331F4FD7DE61DA4C7559D0F8EB192A218D4741A3BA75184333838",
+      "sha1": "F33ACD1F5D31AA81AC18C72C928446226D3D5914",
+      "source": "https://repository.emsign.com/certs/EMEVTLSCAG3B.crt",
+      "type": "intermediate"
+    },
+    {
+      "name": "EM EV TLS CA - G3C",
+      "sha256": "432EC25F0D28DE9006D97BF752F17BBB2CD41F669933FCB072D9A1148D0261F3",
+      "sha1": "C988F3D0CC1629FFC43165D6464C9B6EF73D6E48",
+      "source": "https://repository.emsign.com/certs/EMEVTLSCAG3C.crt",
+      "type": "intermediate"
+    },
+    {
+      "name": "EM OV CS CA - G3B",
+      "sha256": "9E39DE2881273ACC225A149C72BA3E0F51424963669AB633EE1DC7DF5DB067B4",
+      "sha1": "D33195A244046A3263FB5E0E83C6803A5B2E7BC3",
+      "source": "https://repository.emsign.com/certs/EMOVCSCAG3B.crt",
+      "type": "intermediate"
+    },
+    {
+      "name": "EM OV CS CA - G3C",
+      "sha256": "4B2460A466F95FD40113BCDCCA2CEB29B3B093921DE45474DA7DF48874C630B1",
+      "sha1": "1F4A5D178F8B6A8EF0F6784155BD5FEA91158B12",
+      "source": "https://repository.emsign.com/certs/EMOVCSCAG3C.crt",
+      "type": "intermediate"
+    },
+    {
+      "name": "EM OV TLS CA - G3B",
+      "sha256": "98B896625C0C230ADEEC3EB2CF6AAD5001ECF9156A68644E82374CE5833BC25B",
+      "sha1": "5F014E0DB3BB8F950E0598AB280846D383FC57BE",
+      "source": "https://repository.emsign.com/certs/EMOVTLSCAG3B.crt",
+      "type": "intermediate"
+    },
+    {
+      "name": "EM OV TLS CA - G3C",
+      "sha256": "CB6E15165AC802E9B3F993F16C25D41F4E81C21EBDE71AE1B012AC00BF9C7C3F",
+      "sha1": "7FCC31AAB874CE6C8EE8584F54CFD08646B54117",
+      "source": "https://repository.emsign.com/certs/EMOVTLSCAG3C.crt",
+      "type": "intermediate"
+    },
+    {
+      "name": "EM DV TLS CA - G3B (AAA cross-signed)",
+      "sha256": "45A883F349AEDFD5F3A649B5498FFB121712BA8B448F3F2A91DBC5A766FCDDBE",
+      "sha1": "1396BE1372BC93DFA2A433CA964DBA91548A6E57",
+      "source": "https://github.com/Fluepke/emudrahahahahaha",
+      "type": "cross-signed intermediate"
+    },
+    {
+      "name": "EM DV TLS CA - G3C (AAA cross-signed)",
+      "sha256": "62B7F9868263F72F6911FC78CEAF72C1979158B7368BF648683BB2AA39B02E72",
+      "sha1": "4B0944C14F8C2CCBA4E4F32104AD920FA15EE331",
+      "source": "https://github.com/Fluepke/emudrahahahahaha",
+      "type": "cross-signed intermediate"
+    },
+    {
+      "name": "EM EV TLS CA - G3B (AAA cross-signed)",
+      "sha256": "579480AEA166290BD3C643589E795FC0D0E54E86505D180F1DFF99EFD3199512",
+      "sha1": "19069BD6533BFF93FB67C71FB3376B4EA7402C3B",
+      "source": "https://github.com/Fluepke/emudrahahahahaha",
+      "type": "cross-signed intermediate"
+    },
+    {
+      "name": "EM EV TLS CA - G3C (AAA cross-signed)",
+      "sha256": "FD9D5C2DBBD4995AB69B8D50C439D9527B00529199C2FD01B2174EB58F07021F",
+      "sha1": "8588708E875A1F8AA83524F3559080F7E17068C7",
+      "source": "https://github.com/Fluepke/emudrahahahahaha",
+      "type": "cross-signed intermediate"
+    },
+    {
+      "name": "EM OV CS CA - G3B (AAA cross-signed)",
+      "sha256": "A496E23AC0CAB8155FC9B117B97EAE368EFCBB9041AEC8804D5A308D2D01C2D8",
+      "sha1": "EE26D7AE3CC71718F6E07D7D0095076F0C158F63",
+      "source": "https://github.com/Fluepke/emudrahahahahaha",
+      "type": "cross-signed intermediate"
+    },
+    {
+      "name": "EM OV CS CA - G3C (AAA cross-signed)",
+      "sha256": "84112972B8E59D14560AE7E7119654474AAD119990CF3722BFC1E3B91615E1FD",
+      "sha1": "7FDE64753A957B98F172FD2AB0D922551909C7BA",
+      "source": "https://github.com/Fluepke/emudrahahahahaha",
+      "type": "cross-signed intermediate"
+    },
+    {
+      "name": "EM OV TLS CA - G3B (AAA cross-signed)",
+      "sha256": "5F1DED4DD590AF74631290CF073B122A2AAC6A1FA479778A0BD43579BD832699",
+      "sha1": "5DFA19197D1C1CF629AF7C0CD865543C5050227C",
+      "source": "https://github.com/Fluepke/emudrahahahahaha",
+      "type": "cross-signed intermediate"
+    },
+    {
+      "name": "EM OV TLS CA - G3C (AAA cross-signed)",
+      "sha256": "7485B51C0ED192878FA1D2F948FB529AE1842CC5086C4B67F7BE5B2039DE9489",
+      "sha1": "305FC1E253DCAB71B95D4995DAE3CB09D562F22A",
+      "source": "https://github.com/Fluepke/emudrahahahahaha",
+      "type": "cross-signed intermediate"
+    }
+  ]
+}
